@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>岳建伟</title>
+  <subtitle>哼哼哈嘿</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2017-09-02T09:50:09.000Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>岳建伟</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MJExtension简介及使用</title>
+    <link href="http://yoursite.com/2017/09/02/MJExtension%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8/"/>
+    <id>http://yoursite.com/2017/09/02/MJExtension简介及使用/</id>
+    <published>2017-09-02T09:45:03.000Z</published>
+    <updated>2017-09-02T09:50:09.000Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="一-简介"><a href="#一-简介" class="headerlink" title="一, 简介"></a>一, 简介</h4><p>1.MJExtension是一套字典和模型之间互相转换的超轻量级框架,支持以下类型转换:</p>
+<ul>
+<li>JSON –&gt; Model、Core Data Model</li>
+<li>JSONString –&gt; Model、Core Data Model</li>
+<li>Model、Core Data Model –&gt; JSON</li>
+<li>JSON Array –&gt; Model Array、Core Data Model Array</li>
+<li>JSONString –&gt; Model Array、Core Data Model Array</li>
+<li>Model Array、Core Data Model Array –&gt; JSON Array</li>
+<li>Coding all properties of model in one line code.</li>
+</ul>
+<h4 id="二-如何使用"><a href="#二-如何使用" class="headerlink" title="二, 如何使用"></a>二, 如何使用</h4><pre><code>cocoapods导入：pod &apos;MJExtension&apos;
+</code></pre><h4 id="三-常用-API-说明"><a href="#三-常用-API-说明" class="headerlink" title="三,常用 API 说明"></a>三,常用 API 说明</h4><p>示例中相关类.h</p>
+<pre><code>typedef enum {
+SexMale,
+SexFemale
+} Sex;
+@interface User : NSObject
+@property (copy, nonatomic) NSString *name;
+@property (copy, nonatomic) NSString *icon;
+@property (assign, nonatomic) unsigned int age;
+@property (copy, nonatomic) NSString *height;
+@property (strong, nonatomic) NSNumber *money;
+@property (assign, nonatomic) Sex sex;
+@property (assign, nonatomic, getter=isGay) BOOL gay;
+@end
+@interface Status : NSObject
+@property (copy, nonatomic) NSString *text;
+@property (strong, nonatomic) User *user;
+@end
+
+@interface Ad : NSObject
+@property (copy, nonatomic) NSString *image;
+@property (copy, nonatomic) NSString *url;
+@end
+@interface StatusResult : NSObject
+/** Contatins Status model */
+@property (strong, nonatomic) NSMutableArray *statuses;
+/** Contatins Ad model */
+@property (strong, nonatomic) NSArray *ads;
+@property (strong, nonatomic) NSNumber *totalNumber;
+@end
+@interface Bag : NSObject
+@property (copy, nonatomic) NSString *name;
+@property (assign, nonatomic) double price;
+@end
+@interface Student : NSObject
+@property (copy, nonatomic) NSString *ID;
+@property (copy, nonatomic) NSString *desc;
+@property (copy, nonatomic) NSString *nowName;
+@property (copy, nonatomic) NSString *oldName;
+@property (copy, nonatomic) NSString *nameChangedTime;
+@property (strong, nonatomic) Bag *bag;
+@end
+</code></pre><h6 id="1-字典转模型"><a href="#1-字典转模型" class="headerlink" title="1.字典转模型."></a>1.字典转模型.</h6><pre><code>  NSDictionary *dict = @{
+                       @&quot;name&quot; : @&quot;Jack&quot;,
+                       @&quot;icon&quot; : @&quot;lufy.png&quot;,
+                       @&quot;age&quot; : @20,
+                       @&quot;height&quot; : @&quot;1.55&quot;,
+                       @&quot;money&quot; : @100.9,
+                       @&quot;sex&quot; : @(SexFemale),
+                       @&quot;gay&quot; : @&quot;true&quot;
+                       };
+//转换
+User *user = [User mj_objectWithKeyValues:dict];
+</code></pre><h6 id="2-模型中嵌套模型"><a href="#2-模型中嵌套模型" class="headerlink" title="2.模型中嵌套模型"></a>2.模型中嵌套模型</h6><pre><code>NSDictionary *dict = @{
+                       @&quot;name&quot; : @&quot;Agree!Nice weather!&quot;,
+                       @&quot;user&quot; : @{
+                               @&quot;name&quot; : @&quot;Jack&quot;,
+                               @&quot;icon&quot; : @&quot;lufy.png&quot;
+                               },
+                       @&quot;retweetedStatus&quot; : @{
+                               @&quot;text&quot; : @&quot;Nice weather!&quot;,
+                               @&quot;user&quot; : @{
+                                       @&quot;name&quot; : @&quot;Rose&quot;,
+                                       @&quot;icon&quot; : @&quot;nami.png&quot;
+                                       }
+                               }
+                       };
+//转换
+Status *status = [Status mj_objectWithKeyValues:dict];
+</code></pre><h6 id="3-模型中有个数组属性，数组里面又要装着其他模型"><a href="#3-模型中有个数组属性，数组里面又要装着其他模型" class="headerlink" title="3.模型中有个数组属性，数组里面又要装着其他模型"></a>3.模型中有个数组属性，数组里面又要装着其他模型</h6><pre><code>// 1.需要设置数组中包含哪些model key:属性名字 value:包含的model名字
+[StatusResult mj_setupObjectClassInArray:^NSDictionary *{
+    return @{
+             @&quot;statuses&quot; : @&quot;Status&quot;,
+             // @&quot;statuses&quot; : [Status class],
+             @&quot;ads&quot; : @&quot;Ad&quot;
+             // @&quot;ads&quot; : [Ad class]
+             };
+}];
+或者在相关类的.m文件中实现   
+/**
+*  数组中需要转换的模型类
+*
+*  @return 字典中的key是数组属性名，value是数组中存放模型的Class（Class类型或者NSString类型）
+*/ 
++ (NSDictionary *)mj_replacedKeyFromPropertyName;
+//2.
+NSDictionary *dict = @{
+                       @&quot;totalNumber&quot; : @&quot;2014&quot;,
+
+                       @&quot;statuses&quot; : @[
+                               @{
+                                   @&quot;text&quot; : @&quot;Nice weather!&quot;,
+                                   @&quot;user&quot; : @{
+                                           @&quot;name&quot; : @&quot;Rose&quot;,
+                                           @&quot;icon&quot; : @&quot;nami.png&quot;
+                                           }
+                                   },
+                               @{
+                                   @&quot;text&quot; : @&quot;Go camping tomorrow!&quot;,
+                                   @&quot;user&quot; : @{
+                                           @&quot;name&quot; : @&quot;Jack&quot;,
+                                           @&quot;icon&quot; : @&quot;lufy.png&quot;
+                                           }
+                                   }
+                               ],
+                       @&quot;ads&quot; : @[
+                               @{
+                                   @&quot;image&quot; : @&quot;ad01.png&quot;,
+                                   @&quot;url&quot; : @&quot;http://www.ad01.com&quot;
+                                   },
+                               @{
+                                   @&quot;image&quot; : @&quot;ad02.png&quot;,
+                                   @&quot;url&quot; : @&quot;http://www.ad02.com&quot;
+                                   }
+                               ]
+                       };
+//转换
+StatusResult *result = [StatusResult mj_objectWithKeyValues:dict];
+</code></pre><blockquote>
+<p><em>注意不要忘了告诉MJExtension数组中包含的模型</em></p>
+</blockquote>
+<h6 id="3-字典数组转成模型数组"><a href="#3-字典数组转成模型数组" class="headerlink" title="3. 字典数组转成模型数组"></a>3. 字典数组转成模型数组</h6><pre><code>NSArray *dictArray = @[
+                       @{
+                           @&quot;name&quot; : @&quot;Jack&quot;,
+                           @&quot;icon&quot; : @&quot;lufy.png&quot;
+                           },
+                       @{
+                           @&quot;name&quot; : @&quot;Rose&quot;,
+                           @&quot;icon&quot; : @&quot;nami.png&quot;
+                           }
+                       ];
+
+//转换
+NSArray *userArray = [User mj_objectArrayWithKeyValuesArray:dictArray];
+</code></pre><h5 id="4-模型转字典"><a href="#4-模型转字典" class="headerlink" title="4.模型转字典"></a>4.模型转字典</h5><pre><code>User *user = [[User alloc] init];
+user.name = @&quot;Jack&quot;;
+user.icon = @&quot;lufy.png&quot;;
+
+Status *status = [[Status alloc] init];
+status.user = user;
+status.text = @&quot;Nice mood!&quot;;
+//转换
+NSDictionary *statusDict = status.mj_keyValues;
+</code></pre><h5 id="5-模型数组转字典数组"><a href="#5-模型数组转字典数组" class="headerlink" title="5. 模型数组转字典数组"></a>5. 模型数组转字典数组</h5><pre><code>User *user1 = [[User alloc] init];
+user1.name = @&quot;Jack&quot;;
+user1.icon = @&quot;lufy.png&quot;;
+
+User *user2 = [[User alloc] init];
+user2.name = @&quot;Rose&quot;;
+user2.icon = @&quot;nami.png&quot;;
+
+NSArray *userArray = @[user1, user2];
+//转换
+NSArray *dictArray = [User mj_keyValuesArrayWithObjectArray:userArray];
+</code></pre><h5 id="6-允许转换哪些属性"><a href="#6-允许转换哪些属性" class="headerlink" title="6. 允许转换哪些属性"></a>6. 允许转换哪些属性</h5><pre><code>//在.m中实现
++ (NSArray *)mj_allowedPropertyNames;//只有这个数组中的属性名才允许进行字典和模型的转换
+或者相关Model调用
++ (void)mj_setupAllowedPropertyNames:(MJAllowedPropertyNames)allowedPropertyNames;
+</code></pre><h6 id="7-忽略哪些属性转换"><a href="#7-忽略哪些属性转换" class="headerlink" title="7.忽略哪些属性转换"></a>7.忽略哪些属性转换</h6><pre><code>//在.m中实现
++ (NSArray *)mj_ignoredPropertyNames;
+或者相关Model调用
++ (void)mj_setupIgnoredPropertyNames:(MJIgnoredPropertyNames)ignoredPropertyNames;
+</code></pre><h6 id="8-将属性名换为其他key去字典中取值"><a href="#8-将属性名换为其他key去字典中取值" class="headerlink" title="8.  将属性名换为其他key去字典中取值"></a>8.  将属性名换为其他key去字典中取值</h6><pre><code>//.m中实现
+// 字典中的key是属性名，value是从字典中取值
++ (NSDictionary *)mj_replacedKeyFromPropertyName;
+</code></pre><h6 id="9-转换完成后的回调"><a href="#9-转换完成后的回调" class="headerlink" title="9.转换完成后的回调"></a>9.转换完成后的回调</h6><pre><code>// 当字典转模型完毕时调用
+- (void)mj_keyValuesDidFinishConvertingToObject;
+//  当模型转字典完毕时调用
+- (void)mj_objectDidFinishConvertingToKeyValues;
+</code></pre><blockquote>
+<p><em>若有需要只需在相关类中实现以上方法即可</em></p>
+</blockquote>
+<h3 id="四-注意事项"><a href="#四-注意事项" class="headerlink" title="四:注意事项"></a>四:注意事项</h3><p>1.首先要分析需要转换的数据结构调用正确的API.<br>2.遇到结构比较复杂的数据后,可以考虑分层转换,不一定每一层都要按照固定的模式去转换.<br>3.转换嵌套结构的时候,一定要注意看是否需要实现某些方法告诉MJExtension包含哪些模型.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;一-简介&quot;&gt;&lt;a href=&quot;#一-简介&quot; class=&quot;headerlink&quot; title=&quot;一, 简介&quot;&gt;&lt;/a&gt;一, 简介&lt;/h4&gt;&lt;p&gt;1.MJExtension是一套字典和模型之间互相转换的超轻量级框架,支持以下类型转换:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;JS
+    
+    </summary>
+    
+      <category term="iOS 开发" scheme="http://yoursite.com/categories/iOS-%E5%BC%80%E5%8F%91/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>iOS判断图片模糊程度</title>
+    <link href="http://yoursite.com/2017/09/02/iOS%E5%88%A4%E6%96%AD%E5%9B%BE%E7%89%87%E6%A8%A1%E7%B3%8A%E7%A8%8B%E5%BA%A6/"/>
+    <id>http://yoursite.com/2017/09/02/iOS判断图片模糊程度/</id>
+    <published>2017-09-02T08:14:48.000Z</published>
+    <updated>2017-09-02T09:44:05.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>1.获取灰度图</p>
+<pre><code> -(UIImage*)getGrayscale:(UIImage*)sourceImage
+    {
+      int width = sourceImage.size.width;
+      int height = sourceImage.size.height;
+      CGColorSpaceRef colorSpace =  CGColorSpaceCreateDeviceGray();
+      CGContextRef context = CGBitmapContextCreate (nil,width,height,8,width,colorSpace,kCGImageAlphaNone);
+      CGColorSpaceRelease(colorSpace);
+      if (context == NULL) {
+      return nil;
+   }
+    CGContextDrawImage(context,CGRectMake(0, 0, width, height), sourceImage.CGImage);
+     UIImage *grayImage = [UIImage imageWithCGImage:CGBitmapContextCreateImage(context)];
+    CGContextRelease(context);
+
+return grayImage;
+}
+</code></pre><p>2.计算模糊程度（小于500认为是模糊图，这个值可以自己看情况定义）</p>
+<pre><code> double getImgBlurDegree(unsigned char* ImgdataGray, int nWidth, int nHeight)
+{
+  if(ImgdataGray == NULL || nWidth &lt;= 4 || nHeight &lt;= 4)
+{
+    return 0.0;
+}
+int row= nHeight;
+int col= nWidth;
+int widthstep=nWidth;
+double S=0;
+unsigned char* data  = ImgdataGray;
+for(int x = 1;x&lt;row-1;x+=2)
+{
+    unsigned char *pre_row=data +(x-1)*widthstep;
+    unsigned char *cur_row=data +x*widthstep;
+    unsigned char *nex_row=data +(x+1)*widthstep;
+    int Sx,Sy;
+    for(int y = 1;y&lt;col-1;y+=2)
+    {
+        Sx=(int)pre_row[y+1]+2*(int)cur_row[y+1]+(int)nex_row[y+1]//一定要转为uchar
+        -(int)pre_row[y-1]-2*(int)cur_row[y-1]-(int)nex_row[y-1];
+        Sy=(int)nex_row[y-1]+2*(int)nex_row[y]+(int)nex_row[y+1]
+        -(int)pre_row[y-1]-2*(int)pre_row[y]-(int)pre_row[y+1];  
+        S+=Sx*Sx+Sy*Sy;  
+    }  
+} 
+  return S/(row/2-2)/(col/2-2);  
+}
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;1.获取灰度图&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; -(UIImage*)getGrayscale:(UIImage*)sourceImage
+    {
+      int width = sourceImage.size.width;
+      int height = 
+    
+    </summary>
+    
+      <category term="iOS 开发" scheme="http://yoursite.com/categories/iOS-%E5%BC%80%E5%8F%91/"/>
+    
+    
+      <category term="ios" scheme="http://yoursite.com/tags/ios/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我的一篇文章</title>
+    <link href="http://yoursite.com/2017/09/02/%E6%88%91%E7%9A%84%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/"/>
+    <id>http://yoursite.com/2017/09/02/我的一篇文章/</id>
+    <published>2017-09-02T08:13:18.000Z</published>
+    <updated>2017-09-02T09:20:49.000Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
