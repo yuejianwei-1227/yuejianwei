@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-09-02T09:50:09.000Z</updated>
+  <updated>2017-09-27T07:56:22.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,11 +16,88 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>MJExtension简介及使用</title>
+    <title>Mac开发--简介</title>
+    <link href="http://yoursite.com/2017/09/27/%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/"/>
+    <id>http://yoursite.com/2017/09/27/开发简介/</id>
+    <published>2017-09-27T07:45:07.000Z</published>
+    <updated>2017-09-27T07:56:22.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="一、比较-iOS-amp-OS-X"><a href="#一、比较-iOS-amp-OS-X" class="headerlink" title="一、比较 iOS &amp; OS X"></a>一、比较 iOS &amp; OS X</h3><p>开发环境而言，它们使用同样的开发语言，同样的IDE.</p>
+<p>共用相同的框架:Foundation，Core Data 和 Core Animation</p>
+<p>UI 是基于 window 和 view 构建起来的，消息像 iOS 一样通过响应者链传递。此外，UIView 是 NSView，UIControl 是 NSControl，UIImage 是 NSImage，UIViewController 是 NSViewController，UITextView 是 NSTextView…  都是基于NS 前缀。<br>坐标原点是以左下角为（0，0）</p>
+<h3 id="二、工程创建"><a href="#二、工程创建" class="headerlink" title="二、工程创建"></a>二、工程创建</h3><p>  Xcode新建工程选择 macOS 的 cocoaApplication</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/907025-b1a09a7df835bae6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="create.png"><br>默认会会从创建一个 Main.storyboard 中启动，开发过程中新建的类都是macOS下的cocoaClass。</p>
+<p> <img src="http://upload-images.jianshu.io/upload_images/907025-445551d02dc9ea2c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="class.png"></p>
+<h3 id="三、展示"><a href="#三、展示" class="headerlink" title="三、展示"></a>三、展示</h3><p>NSWindow，NSViewcontroller，NSView<br>显示新页面方式：<br>在当前页面中可调用 NSViewController 方法 也可以调用 NSApp 方法 </p>
+<pre><code>SecondViewController *vc = [[SecondViewController alloc] initWithNibName:@&quot;SecondViewController&quot; bundle:nil];
+//顶部弹出
+[self presentViewControllerAsSheet:vc];
+//弹出一个新的window
+[self presentViewControllerAsModalWindow:vc];
+// 消失
+[self dismissController:nil];  (被弹出的页面调用)
+[self dismissViewController:vc]; (弹出者调用)
+
+//NSApp 弹出新的window
+NSWindow *window = [NSWindow new];
+window.contentViewController = vc;
+NSModalResponse code = [NSApp runModalForWindow:window];
+//对应的消失 方法
+[NSApp stopModal]; //code = NSModalResponseStop
+[NSApp stopModalWithCode:stopCode]; //code = stopCode
+[NSApp abortModal];// code = NSModalResponseAbort
+</code></pre><p><img src="http://upload-images.jianshu.io/upload_images/907025-aea4c6e516f23bb0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="presentViewControllerAsSheet.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/907025-37bc35f2eb6fa6b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="presentViewControllerAsModalWindow.png"></p>
+<h3 id="常见用法"><a href="#常见用法" class="headerlink" title="常见用法"></a>常见用法</h3><h6 id="1-NSWindow"><a href="#1-NSWindow" class="headerlink" title="1.NSWindow"></a>1.NSWindow</h6><p>默认窗口都是可缩放的，若要固定一个窗口大小，两种方式：<br>1.设置window的minSize ,contentMinSize,maxSize,contentMaxSize<br>2.window 的contentViewController.view增加宽高约束</p>
+<p>标题显示隐藏</p>
+<pre><code>window.titleVisibility = NSWindowTitleHidden(隐藏);NSWindowTitleVisible(显示);
+</code></pre><p><img src="http://upload-images.jianshu.io/upload_images/907025-6e5780d92f3b07bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>透明titlebar</p>
+<pre><code>window.titlebarAppearsTransparent = YES;
+</code></pre><p><img src="http://upload-images.jianshu.io/upload_images/907025-5e0c1e19c63147b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>获取左上角按钮</p>
+<pre><code>//最小化
+NSButton *minizturize = [window standardWindowButton:NSWindowMiniaturizeButton];
+//关闭
+NSButton *close = [window standardWindowButton:NSWindowCloseButton];
+//最大化
+NSButton *zoom = [window standardWindowButton:NSWindowZoomButton];
+//隐藏最大化按钮
+zoom.hidden = YES;
+</code></pre><h6 id="2-NSView"><a href="#2-NSView" class="headerlink" title="2.NSView"></a>2.NSView</h6><p>设置背景色方法</p>
+<pre><code>[view setWantsLayer:YES];
+view.layer.backgroundColor = [NSColor redColor].CGColor;
+</code></pre><p>以左上角为（0，0）重写NSView的flipped属性</p>
+<pre><code>- (BOOL)isFlipped {
+  return YES;
+}
+</code></pre><p>效果如下：<br><img src="http://upload-images.jianshu.io/upload_images/907025-744e30f66e050a1f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>不能用weak修饰的几个类</p>
+<blockquote>
+<p>NSATSTypesetter, NSColorSpace, NSFont, NSMenuView,NSTextView(&lt;10_12).</p>
+</blockquote>
+<p>参考链接：<br><a href="http://www.jianshu.com/p/81294f05ae84" target="_blank" rel="external">http://www.jianshu.com/p/81294f05ae84</a><br><a href="http://www.jianshu.com/p/feadeb1ae7ae" target="_blank" rel="external">http://www.jianshu.com/p/feadeb1ae7ae</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;一、比较-iOS-amp-OS-X&quot;&gt;&lt;a href=&quot;#一、比较-iOS-amp-OS-X&quot; class=&quot;headerlink&quot; title=&quot;一、比较 iOS &amp;amp; OS X&quot;&gt;&lt;/a&gt;一、比较 iOS &amp;amp; OS X&lt;/h3&gt;&lt;p&gt;开发环境而言
+    
+    </summary>
+    
+      <category term="Mac 开发" scheme="http://yoursite.com/categories/Mac-%E5%BC%80%E5%8F%91/"/>
+    
+    
+      <category term="mac" scheme="http://yoursite.com/tags/mac/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>iOS开发--MJExtension简介及使用</title>
     <link href="http://yoursite.com/2017/09/02/MJExtension%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8/"/>
     <id>http://yoursite.com/2017/09/02/MJExtension简介及使用/</id>
     <published>2017-09-02T09:45:03.000Z</published>
-    <updated>2017-09-02T09:50:09.000Z</updated>
+    <updated>2017-09-27T07:52:56.000Z</updated>
     
     <content type="html"><![CDATA[<h4 id="一-简介"><a href="#一-简介" class="headerlink" title="一, 简介"></a>一, 简介</h4><p>1.MJExtension是一套字典和模型之间互相转换的超轻量级框架,支持以下类型转换:</p>
 <ul>
@@ -222,11 +299,11 @@ NSArray *dictArray = [User mj_keyValuesArrayWithObjectArray:userArray];
   </entry>
   
   <entry>
-    <title>iOS判断图片模糊程度</title>
+    <title>iOS开发-判断图片模糊程度</title>
     <link href="http://yoursite.com/2017/09/02/iOS%E5%88%A4%E6%96%AD%E5%9B%BE%E7%89%87%E6%A8%A1%E7%B3%8A%E7%A8%8B%E5%BA%A6/"/>
     <id>http://yoursite.com/2017/09/02/iOS判断图片模糊程度/</id>
     <published>2017-09-02T08:14:48.000Z</published>
-    <updated>2017-09-02T09:44:05.000Z</updated>
+    <updated>2017-09-27T07:53:07.000Z</updated>
     
     <content type="html"><![CDATA[<p>1.获取灰度图</p>
 <pre><code> -(UIImage*)getGrayscale:(UIImage*)sourceImage
