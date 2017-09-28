@@ -267,6 +267,217 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/28/Git-log命令使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="岳建伟">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="岳建伟">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/28/Git-log命令使用/" itemprop="url">Git--log命令使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-28T11:17:20+08:00">
+                2017-09-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Git-log-用法"><a href="#Git-log-用法" class="headerlink" title="Git log 用法"></a>Git log 用法</h3><p>想要查看Git 的提交历史,大多数都是直接使用 git log,这样 是可以查看,不过有点丑.下面来看下 一步步的美化 log显示吧</p>
+<p>使用Git –help 可以发现log 命令格式如下</p>
+<pre><code>git log [&lt;options&gt;] [&lt;revision range&gt;] [[--] &lt;path&gt;...]
+</code></pre><p>一,基础用法</p>
+<ul>
+<li><code>git log</code>  最常见的用法 ,看一两条或者几条还行.多了就看着有点蒙了,如果一页显示不下 上下箭头显示更多</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/907025-3265a48447d96848.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>二.升级版显示<br>命令汇总</p>
+<ul>
+<li><code>-p</code> :按补丁格式显示每个更新之间的差异</li>
+<li><code>--stat</code>:显示每次更新的文件修改统计信息</li>
+<li><code>--shortstat</code>:只显示–stat中最后的行数添加修改删除统计</li>
+<li><code>--name-only</code>:仅在提交信息后显示已修改的文件清单</li>
+<li><code>--name-status</code>:显示新增、修改、删除的文件清单</li>
+<li><code>--abbrev-commit</code>:仅显示 SHA-1 的前几个字符，而非所有的 40 个字符</li>
+<li><code>--relative-date</code>:使用相对时间显示(比如2 days ago)</li>
+<li><code>--graph</code>:显示ASCII图形表示的分支合并历史</li>
+<li><p><code>--pretty=</code>:使用其他格式显示历史提交信息。可用的选项包括 oneline,short,medium,full,fuller,email,raw以及format（后跟指定格式）。<br>format:后边的参数:</p>
+<blockquote>
+<ol>
+<li>%H  提交对象（commit）的完整哈希字串</li>
+<li>%h  提交对象的简短哈希字串</li>
+<li>%T  树对象（tree）的完整哈希字串</li>
+<li>%t  树对象的简短哈希字串</li>
+<li>%P  父对象（parent）的完整哈希字串</li>
+<li>%p  父对象的简短哈希字串</li>
+<li>%an 作者（author）的名字</li>
+<li>%ae 作者的电子邮件地址</li>
+<li>%ad 作者修订日期（可以用 -date= 选项定制格式）</li>
+<li>%ar 作者修订日期，按多久以前的方式显示</li>
+<li>%cn 提交者(committer)的名字<br>作者和提交者的区别不知道是啥？<br>1.作者与提交者的关系：作者是程序的修改者，提交者是代码提交人（自己的修改不提交是怎么能让别人拉下来再提交的？）<br>2.其实作者指的是实际作出修改的人，提交者指的是最后将此工作成果提交到仓库的人。所以，当你为某个项目发布补丁，然后某个核心成员将你的补丁并入项目时，你就是作者，而那个核心成员就是提交者</li>
+<li>%ce 提交者的电子邮件地址</li>
+<li>cd 提交日期（可以用 -date= 选项定制格式）</li>
+<li>%cr 提交日期，按多久以前的方式显示</li>
+<li>%s  提交说明</li>
+</ol>
+</blockquote>
+</li>
+<li><p><code>--date= (relative|local|default|iso|rfc|short|raw)</code>:时间显示</p>
+<blockquote>
+<ol>
+<li><code>--date=relative</code>：shows dates relative to the current time, e.g. “2 hours ago”.</li>
+<li><code>--date=local</code>：shows timestamps in user’s local timezone.</li>
+<li><code>--date=iso (or --date=iso8601)</code>：shows timestamps in ISO 8601 format.</li>
+<li><code>--date=rfc (or --date=rfc2822)</code>：shows timestamps in RFC 2822 format,often found in E-mail messages.</li>
+<li><code>--date=short</code>：shows only date but not time, in YYYY-MM-DD format.</li>
+<li><code>--date=raw</code>：shows the date in the internal raw git format %s %z format.</li>
+<li><code>--date=default</code>：shows timestamps in the original timezone (either committer’s or author’s).</li>
+</ol>
+</blockquote>
+</li>
+</ul>
+<p>筛选相关命令</p>
+<ul>
+<li><code>-n</code>:显示n条log</li>
+<li><p><code>--after=</code>:只显示多久之后的记录, 比如git log –after=”2014-7-1”，显示2014年7月1号之后的commit(包含7月1号), 后边的日期还可以用相对时间表示，比如”1 week ago”和”yesterday”，比如git log –after=”yesterday”</p>
+</li>
+<li><p><code>--before=</code>:同上</p>
+</li>
+<li><code>--author=</code>:仅显示指定作者相关的提交</li>
+<li><code>--committer</code>:仅显示指定提交者相关的提交</li>
+<li><code>--grep=</code>:仅显示含指定关键字的提交</li>
+<li><code>tagName</code>:仅显示相应tag的提交</li>
+<li><code>commit</code>:查询commit之前的记录，包含commit</li>
+</ul>
+<p>另外还有一个有颜色的显示O(∩_∩)O哈哈~</p>
+<pre><code>git log --pretty=format:&quot;%C(red)%h-%C(yellow)%an %C(blue)%ad %C(green)%s&quot; --author=yue --date=short
+</code></pre><p>颜色以％C开头，能设置的颜色值包括：reset（默认的灰色），normal, black, red, green, yellow, blue, magenta, cyan, white.</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/907025-b473eb3acdf0c8e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/27/开发简介/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1126,7 +1337,7 @@ for(int x = 1;x&lt;row-1;x+=2)
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1137,7 +1348,7 @@ for(int x = 1;x&lt;row-1;x+=2)
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1148,7 +1359,7 @@ for(int x = 1;x&lt;row-1;x+=2)
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
